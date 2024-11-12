@@ -19,12 +19,53 @@
       5. Add a countdown timer - when the time is up, end the quiz, display the score and highlight the correct answers
 *************************** */
 
+// Event Listener when the webpage has fully loaded
 window.addEventListener('DOMContentLoaded', () => {
   const start = document.querySelector('#start');
   start.addEventListener('click', function (e) {
     document.querySelector('#quizBlock').style.display = 'block';
     start.style.display = 'none';
+    // Call startTimer when the quiz starts 
+    startTimer();
   });
+
+  //Event Listener for reset button
+  const reset = document.querySelector('#btnReset');
+  reset.addEventListener('click', function (e) {
+    window.location.reload();
+  });
+
+  //Initializing the timer
+  let timerDuration = 60; // Set the duration of the quiz in seconds
+  const timerDisplay = document.getElementById("time"); // Display area for the timer
+
+// Function to start the countdown timer
+const startTimer = () => {
+    let timeLeft = timerDuration;
+
+    const countdown = setInterval(() => {
+        // Display remaining time
+        timerDisplay.innerText = `Time left: ${timeLeft} seconds`;
+        
+        // Reduce time by 1 second
+        timeLeft--;
+
+        // When time is up
+        if (timeLeft < 0) {
+            clearInterval(countdown); // Stop the timer
+
+            // Disable the submit button to prevent multiple submissions
+            btnSubmit.disabled = true;
+
+            // End the quiz, calculate and display score, highlight correct answers
+            const score = calculateScore();
+            const scoreDisplay = document.getElementById("scoreDisplay");
+            scoreDisplay.innerText = `Time's up! Your score is: ${score}`;
+        }
+    }, 1000); // Runs every 1000ms (1 second)
+};
+
+
   // quizArray QUESTIONS & ANSWERS
   // q = QUESTION, o = OPTIONS, a = CORRECT ANSWER
   // Basic ideas from https://code-boxx.com/simple-javascript-quiz/
@@ -42,6 +83,16 @@ window.addEventListener('DOMContentLoaded', () => {
     {
       q: 'What is the capital of Australia',
       o: ['Sydney', 'Canberra', 'Melbourne', 'Perth'],
+      a: 1,
+    },
+    {
+      q: 'Which state is Melbourne in?',
+      o: ['VIC', 'NSW', 'Queensland', 'WA'],
+      a: 0,
+    },
+    {
+      q: 'Which state is Sydney in?',
+      o: ['VIC', 'NSW', 'Queensland', 'WA'],
       a: 1,
     },
   ];
@@ -76,15 +127,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (quizItem.a == i) {
           //change background color of li element here
+          liElement.style.backgroundColor = "lightgreen"; 
         }
 
-        if (radioElement.checked) {
+        if (radioElement.checked && quizItem.a==i) {
           // code for task 1 goes here
+          score++
         }
       }
     });
+    return score;
   };
+  
+// Event listener for the submit button
+document.getElementById("btnSubmit").addEventListener("click", () => {
+  const score = calculateScore();
 
+  // Display the score
+  const scoreDisplay = document.getElementById("scoreDisplay");
+  scoreDisplay.innerText = `Your score is: ${score}`;
+});
   // call the displayQuiz function
   displayQuiz();
 });
